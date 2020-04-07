@@ -55,7 +55,7 @@ class Solver(object):
         # Miscellaneous.
         self.use_tensorboard = config.use_tensorboard
         self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-        self.spk_enc = LabelBinarizer().fit(speakers)
+        self.spk_enc = np.array(speakers)
         # Directories.
         self.log_dir = config.log_dir
         self.sample_dir = config.sample_dir
@@ -249,7 +249,7 @@ class Solver(object):
                 with torch.no_grad():
                     d, speaker = TestSet(self.test_dir).test_data()
                     target = random.choice([x for x in speakers if x != speaker])
-                    label_t = self.spk_enc.transform([target])[0]
+                    label_t = self.spk_enc == target
                     label_t = np.asarray([label_t])
 
                     for filename, content in d.items():
