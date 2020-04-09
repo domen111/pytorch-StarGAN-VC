@@ -355,7 +355,7 @@ class Solver(object):
         for target in targets:
             print(target)
             assert target in speakers
-            label_t = self.spk_enc.transform([target])[0]
+            label_t = self.spk_enc == target
             label_t = np.asarray([label_t])
             
             with torch.no_grad():
