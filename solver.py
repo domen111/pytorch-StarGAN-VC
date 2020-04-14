@@ -14,7 +14,7 @@ from model import Discriminator, DomainClassifier, Generator
 from utility import Normalizer, speakers
 from preprocess import FRAMES, SAMPLE_RATE, FFTSIZE
 import random
-from sklearn.preprocessing import LabelBinarizer
+from speaker_embedding import SpeakerEmbedding
 from pyworld import decode_spectral_envelope, synthesize
 import librosa
 import ast
@@ -35,6 +35,7 @@ class Solver(object):
         # Training configurations.
         self.data_dir = config.data_dir
         self.test_dir = config.test_dir
+        self.embedding_dir = config.embedding_dir
         self.batch_size = config.batch_size
         self.num_iters = config.num_iters
         self.num_iters_decay = config.num_iters_decay
@@ -55,7 +56,7 @@ class Solver(object):
         # Miscellaneous.
         self.use_tensorboard = config.use_tensorboard
         self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-        self.spk_enc = np.array(speakers)
+        self.spk_enc = SpeakerEmbedding(self.embedding_dir)
         # Directories.
         self.log_dir = config.log_dir
         self.sample_dir = config.sample_dir
@@ -249,8 +250,7 @@ class Solver(object):
                 with torch.no_grad():
                     d, speaker = TestSet(self.test_dir).test_data()
                     target = random.choice([x for x in speakers if x != speaker])
-                    label_t = self.spk_enc == target
-                    label_t = np.asarray([label_t])
+                    label_t = self.spk_enc.transform(target)
 
                     for filename, content in d.items():
                         f0 = content['f0']
@@ -355,8 +355,7 @@ class Solver(object):
         for target in targets:
             print(target)
             assert target in speakers
-            label_t = self.spk_enc == target
-            label_t = np.asarray([label_t])
+            label_t = self.spk_enc.transform(target)
             
             with torch.no_grad():
 

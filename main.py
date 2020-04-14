@@ -76,6 +76,7 @@ if __name__ == '__main__':
     # Directories.
     parser.add_argument('--data_dir', type=str, default='data/processed')
     parser.add_argument('--test_dir', type=str, default='data/speakers_test')
+    parser.add_argument('--embedding_dir', type=str, default='data/speakers_embedding')
     parser.add_argument('--log_dir', type=str, default='starganvc/logs')
     parser.add_argument('--model_save_dir', type=str, default='starganvc/models')
     parser.add_argument('--sample_dir', type=str, default='starganvc/samples')

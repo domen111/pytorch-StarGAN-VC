@@ -62,12 +62,12 @@ class Generator(nn.Module):
         )
 
         
-        self.up1 = Up2d(7, 64, (9,5), (9,1), (0,2))
-        self.up2 = Up2d(66, 128, (3,5), (1,1), (1,2))
-        self.up3 = Up2d(130, 64, (4,8), (2,2), (1,3))
-        self.up4 = Up2d(66, 32, (4,8), (2,2), (1,3))
+        self.up1 = Up2d(133, 64, (9,5), (9,1), (0,2))
+        self.up2 = Up2d(192, 128, (3,5), (1,1), (1,2))
+        self.up3 = Up2d(256, 64, (4,8), (2,2), (1,3))
+        self.up4 = Up2d(192, 32, (4,8), (2,2), (1,3))
 
-        self.deconv = nn.ConvTranspose2d(34, 1, (3,9), (1,1), (1,4))
+        self.deconv = nn.ConvTranspose2d(160, 1, (3,9), (1,1), (1,4))
 
     def forward(self, x, c):
         x = self.downsample(x)
@@ -100,12 +100,12 @@ class Discriminator(nn.Module):
     def __init__(self):
         super(Discriminator, self).__init__()
         
-        self.d1 = Down2d(3, 32, (3,9), (1,1), (1,4))
-        self.d2 = Down2d(34, 32, (3,8), (1,2), (1,3))
-        self.d3 = Down2d(34, 32, (3,8), (1,2), (1,3))
-        self.d4 = Down2d(34, 32, (3,6), (1,2), (1,2))
+        self.d1 = Down2d(129, 32, (3,9), (1,1), (1,4))
+        self.d2 = Down2d(160, 32, (3,8), (1,2), (1,3))
+        self.d3 = Down2d(160, 32, (3,8), (1,2), (1,3))
+        self.d4 = Down2d(160, 32, (3,6), (1,2), (1,2))
         
-        self.conv = nn.Conv2d(34, 1, (34,5), (34,1), (0,2))
+        self.conv = nn.Conv2d(160, 1, (34,5), (34,1), (0,2))
         self.pool = nn.AvgPool2d((1,64))
     def forward(self, x, c):
         c = c.view(c.size(0), c.size(1), 1, 1)
@@ -144,7 +144,7 @@ class DomainClassifier(nn.Module):
             Down2d(8, 16, (4,4), (2,2), (1,1)),
             Down2d(16, 32, (4,4), (2,2), (0,1)),
             Down2d(32, 16, (3,4), (1,2), (1,1)),
-            nn.Conv2d(16, 2, (1,4), (1,2), (0,1)),
+            nn.Conv2d(16, 128, (1,4), (1,2), (0,1)),
             nn.AvgPool2d((1,16)),
             nn.LogSoftmax()
         )

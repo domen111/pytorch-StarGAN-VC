@@ -4,7 +4,7 @@ import os
 import librosa
 import numpy as np
 import torch
-from sklearn.preprocessing import LabelBinarizer
+from speaker_embedding import SpeakerEmbedding
 from torch.utils.data.dataloader import DataLoader
 from torch.utils.data.dataset import Dataset
 
@@ -19,14 +19,14 @@ class AudioDataset(Dataset):
         super(AudioDataset, self).__init__()
         self.datadir = datadir
         self.files = librosa.util.find_files(datadir, ext='npy')
-        self.encoder = np.array(speakers)
+        self.encoder = SpeakerEmbedding()
         
 
     def __getitem__(self, idx):
         p = self.files[idx]
         filename = os.path.basename(p)
         speaker = filename.split(sep='_', maxsplit=1)[0]
-        label = self.encoder == speaker
+        label = self.encoder.transform(speaker)[0]
         mcep = np.load(p)
         mcep = torch.FloatTensor(mcep)
         mcep = torch.unsqueeze(mcep, 0)
